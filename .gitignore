@@ -1,0 +1,39 @@
+# Python
+*.egg-info/
+*.egg
+*.spec
+*.log
+*.db
+*.sqlite
+*.pypackage
+*.egg
+*.mo
+*.pot
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+
+# Node.js
+.npm
+
+# Codeium
+.codeium/
+
+# SSH
+.ssh
+
+# NVM
+.nvm
+
+# Local
+.local/
+
+# Cache
+.cache/
+
+# Windsurf
+.windsurf-server/
+
+# Data
+/data/
