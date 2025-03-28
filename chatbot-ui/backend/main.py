@@ -1,11 +1,19 @@
+import os
+import json
+import logging
+import uvicorn
+import time
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-from fastapi.logger import logger
 from pydantic import BaseModel
 from typing import Optional, List
-import logging
-import uvicorn
+
+import chromadb
+from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
+from config import load_api_key
+from llm_cache import LLMCache
 
 # 로깅 설정
 logging.basicConfig(level=logging.INFO)
@@ -21,6 +29,35 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# ChromaDB 클라이언트 초기화
+chroma_client = chromadb.Client()
+
+# API 키 로드
+def load_api_key():
+    try:
+        with open('api_key.json', 'r') as f:
+            api_keys = json.load(f)
+            return api_keys['openai_api_key']
+    except Exception as e:
+        logger.error(f"API 키 로드 실패: {e}")
+        raise
+
+# OpenAI Embedding 함수 초기화
+openai_ef = OpenAIEmbeddingFunction(
+    api_key=load_api_key(),
+    model_name="text-embedding-ada-002"
+)
+
+# Semantic Cache 초기화
+semantic_cache = chroma_client.get_or_create_collection(
+    name="semantic_cache",
+    embedding_function=openai_ef,
+    metadata={"hnsw:space": "cosine"}
+)
+
+# LLM Cache 초기화
+app.llm_cache = LLMCache(semantic_cache)
 
 class Message(BaseModel):
     role: str
@@ -43,18 +80,19 @@ async def chat(message: ChatMessage):
     try:
         query = message.messages[-1].content
         
-        if query == "안녕":
-            answer = "안녕하세요! 무엇을 도와드릴까요?"
-        else:
-            answer = f"죄송합니다. {query}에 대해 답변을 찾을 수 없습니다."
+        start_time = time.time()
+        answer = app.llm_cache.generate(query)
+        
+        print(f'질문: {query}')
+        print("소요 시간: {:.2f}s".format(time.time() - start_time))
+        print(f'답변: {answer}\n')
         
         response = ChatResponse(
             role="assistant",
-            content=f"{answer}"
+            content=answer
         )
         
         return response
-        
     except Exception as e:
         logger.error(f"오류 발생: {e}")
         raise HTTPException(status_code=500, detail=str(e))

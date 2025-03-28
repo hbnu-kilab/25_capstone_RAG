@@ -49,3 +49,6 @@ ENV/
 # OS
 .DS_Store
 Thumbs.db
+
+
+/backend/api_key.json
