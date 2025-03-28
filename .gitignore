@@ -1,39 +1,59 @@
+
+# dependencies
+/frontend/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/frontend/.next
+/frontend/out/
+
+# production
+/frontend/build
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files
+.env*
+.env*.local
+
+# vercel
+.vercel
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
+
+# testing
+/coverage
+
 # Python
-*.egg-info/
-*.egg
-*.spec
-*.log
-*.db
-*.sqlite
-*.pypackage
-*.egg
-*.mo
-*.pot
-*.pyc
-*.pyo
-*.pyd
 __pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+ENV/
 
-# Node.js
-.npm
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
 
-# Codeium
-.codeium/
+# OS
+.DS_Store
+Thumbs.db
 
-# SSH
-.ssh
 
-# NVM
-.nvm
-
-# Local
-.local/
-
-# Cache
-.cache/
-
-# Windsurf
-.windsurf-server/
-
-# Data
-/data/
+/backend/api_key.json
+/backend/.env
+.gitconfig
+.bashrc
+.bash_history
+.lesshst
