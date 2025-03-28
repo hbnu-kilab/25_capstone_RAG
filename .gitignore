@@ -1,42 +1,37 @@
+# Project Specific
+chatbot-ui/backend/api_key.json
+chatbot-ui/backend/.env
+chatbot-ui/backend/chroma/
+chatbot-ui/backend/*.sqlite3
+chatbot-ui/backend/index_data/
 
-# dependencies
-/frontend/node_modules
-/.pnp
-.pnp.js
+# Frontend Dependencies
+chatbot-ui/frontend/node_modules
+chatbot-ui/frontend/.pnp
+chatbot-ui/frontend/.pnp.js
 
-# next.js
-/frontend/.next
-/frontend/out/
+# Frontend Build
+chatbot-ui/frontend/.next/
+chatbot-ui/frontend/out/
+chatbot-ui/frontend/build
+chatbot-ui/frontend/.vercel
+chatbot-ui/frontend/coverage
 
-# production
-/frontend/build
-
-# debug
+# Frontend Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 .pnpm-debug.log*
 
-# env files
-.env*
-.env*.local
-
-# vercel
-.vercel
-
-# typescript
+# Frontend Types
 *.tsbuildinfo
 next-env.d.ts
 
-# testing
-/coverage
-
-# Python
+# Backend
 __pycache__/
 *.py[cod]
 *$py.class
 *.so
-.Python
 venv/
 ENV/
 
@@ -46,14 +41,34 @@ ENV/
 *.swp
 *.swo
 
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
 # OS
 .DS_Store
 Thumbs.db
 
-
-/backend/api_key.json
-/backend/.env
+# System Files
 .gitconfig
 .bashrc
 .bash_history
 .lesshst
+.windsurf
+.windsurf-server
+
+# Cache and Package Managers
+.cache/
+.codeium/
+.local/
+.npm/
+.nvm/
+.ssh/
+
+# Data and Models
+/data/
+/datasets/
+/models/
