@@ -8,24 +8,7 @@ export async function POST(req: Request) {
   };
 
   try {
-    // 요청 본문에서 메시지 추출
-    // const { messages } = await req.json()
-    // console.log({ messages });
     const { messages }: { messages: Message[] } = await req.json();
-    
-    // const response = await fetch('http://localhost:8000/chat', {
-    //           method: "POST",
-    //           headers: {
-    //             'Content-Type': 'application/json',
-    //           },
-    //           body: JSON.stringify({ 
-    //             messages: [{
-    //               role: 'user',
-    //               content: messages
-    //             }]
-    //           }),
-    //         });
-
 
     const filteredMessages = messages
       .filter((msg: Message) => msg.content !== undefined)
@@ -35,7 +18,7 @@ export async function POST(req: Request) {
         content: msg.content as string,
       }));
 
-    const response = await fetch('http://localhost:8000/chat', {
+    const response = await fetch('http://KiChatserver:8000/chat', {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',

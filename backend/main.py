@@ -15,7 +15,7 @@ from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from config import load_api_key
 from llm_cache import LLMCache
 
-# 로깅 설정
+# # 로깅 설정
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ app = FastAPI(title="KILAB Chatbot API")
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js 프론트엔드 주소
+    allow_origins=["http://KiChat:3000"],  # Next.js 프론트엔드 주소
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -32,16 +32,6 @@ app.add_middleware(
 
 # ChromaDB 클라이언트 초기화
 chroma_client = chromadb.Client()
-
-# API 키 로드
-def load_api_key():
-    try:
-        with open('api_key.json', 'r') as f:
-            api_keys = json.load(f)
-            return api_keys['openai_api_key']
-    except Exception as e:
-        logger.error(f"API 키 로드 실패: {e}")
-        raise
 
 # OpenAI Embedding 함수 초기화
 openai_ef = OpenAIEmbeddingFunction(
@@ -76,10 +66,10 @@ async def root():
 
 @app.post("/chat", response_model=ChatResponse)
 async def chat(message: ChatMessage):
+    print(logger)
     logger.info(f"API 호출: {message}")
     try:
         query = message.messages[-1].content
-        
         start_time = time.time()
         answer = app.llm_cache.generate(query)
         

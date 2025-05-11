@@ -1,7 +1,11 @@
+import logging
 import openai
-from config import load_api_key
+import requests
+from fastapi import HTTPException
 
-client = openai.OpenAI(api_key=load_api_key())
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 class LLMCache:
     def __init__(self, semantic_cache):
@@ -9,7 +13,6 @@ class LLMCache:
         self.semantic_cache = semantic_cache
 
     def generate(self, query):
-        
         if query in self.cache:
             return self.cache[query]
         
@@ -20,7 +23,7 @@ class LLMCache:
         
         # 유사한 질문이 있고 유사도가 임계값(0.*) 이하인 경우
         if (len(similar_docs['distances'][0]) > 0 and 
-            similar_docs['distances'][0][0] < 0.1):
+            similar_docs['distances'][0][0] < 0.05):
             return similar_docs['metadatas'][0][0]['response']
         
         response = self.response_to_rag(query)
@@ -37,25 +40,27 @@ class LLMCache:
         return response_str
     
     def response_to_rag(self, query):
-        # 추후 구현할 것
-        # 임시로 응답 반환 테스트
-        completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=[
-                {
-                    "role": "system",
-                    "content": "당신은 웹 검색을 할 수 있는 도구를 사용할 수 있습니다.",
-                },
-                {
-                    "role": "user",
-                    "content": query,
-                },
-            ],
-        )
-        response = completion.choices[0].message.content
-        return response
+        try:
+            
+            response = requests.post(
+                "http://RagServer:8001/rag",
+                json={"query": query},
+                timeout=30
+            )
+            
+            return response.json()
+        
+            if response.status_code != 200:
+                raise Exception(f"RAG API 요청 실패: {response.status_code} {response.text}")
+        
+        except Exception as e:
+            logger.error(f"오류 발생: {e}")
+            raise HTTPException(status_code=500, detail=str(e), response=None, body=None)
+    
     
     def _format_response(self, response):
+        if isinstance(response, dict) and 'answer' in response:
+            return response['answer']
         if isinstance(response, str):
             return response
         return str(response)

@@ -1,21 +1,23 @@
 # Project Specific
-chatbot-ui/backend/api_key.json
-chatbot-ui/backend/.env
-chatbot-ui/backend/chroma/
-chatbot-ui/backend/*.sqlite3
-chatbot-ui/backend/index_data/
+backend/api_key.json
+backend/.env
+backend/chroma/
+backend/*.sqlite3
+backend/index_data/
 
 # Frontend Dependencies
-chatbot-ui/frontend/node_modules
-chatbot-ui/frontend/.pnp
-chatbot-ui/frontend/.pnp.js
+frontend/node_modules
+frontend/.pnp
+frontend/.pnp.js
 
 # Frontend Build
-chatbot-ui/frontend/.next/
-chatbot-ui/frontend/out/
-chatbot-ui/frontend/build
-chatbot-ui/frontend/.vercel
-chatbot-ui/frontend/coverage
+frontend/.next/
+frontend/out/
+frontend/build
+frontend/.vercel
+frontend/coverage
+
+rag_server/api_key.json
 
 # Frontend Logs
 npm-debug.log*
