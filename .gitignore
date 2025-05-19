@@ -1,0 +1,76 @@
+# Project Specific
+backend/api_key.json
+backend/.env
+backend/chroma/
+backend/*.sqlite3
+backend/index_data/
+
+# Frontend Dependencies
+frontend/node_modules
+frontend/.pnp
+frontend/.pnp.js
+
+# Frontend Build
+frontend/.next/
+frontend/out/
+frontend/build
+frontend/.vercel
+frontend/coverage
+
+rag_server/api_key.json
+
+# Frontend Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Frontend Types
+*.tsbuildinfo
+next-env.d.ts
+
+# Backend
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+venv/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# System Files
+.gitconfig
+.bashrc
+.bash_history
+.lesshst
+.windsurf
+.windsurf-server
+
+# Cache and Package Managers
+.cache/
+.codeium/
+.local/
+.npm/
+.nvm/
+.ssh/
+
+# Data and Models
+/data/
+/datasets/
+/models/
