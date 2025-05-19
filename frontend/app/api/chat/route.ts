@@ -18,7 +18,7 @@ export async function POST(req: Request) {
         content: msg.content as string,
       }));
 
-    const response = await fetch('http://KiChatserver:8000/chat', {
+    const response = await fetch('http://ki-api:8000/chat', {
       method: "POST",
       headers: {
         'Content-Type': 'application/json',

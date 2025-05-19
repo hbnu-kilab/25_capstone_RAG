@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 from typing import Optional, List
 
+from openai import OpenAI
 import chromadb
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from config import load_api_key
@@ -20,11 +21,12 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = FastAPI(title="KILAB Chatbot API")
+client = OpenAI(api_key=load_api_key())
 
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://KiChat:3000"],  # Next.js 프론트엔드 주소
+    allow_origins=["http://ki-chat:3000"],  # Next.js 프론트엔드 주소
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

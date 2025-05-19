@@ -1,0 +1,39 @@
+
+services:
+  ki-chat:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - ki-api
+
+  ki-api:
+    build: ./backend
+    expose:
+      - "8000"
+    environment:
+      DATABASE_URL: postgres://kilab:kilab0204@db:5432/mydb
+    depends_on:
+      - db
+
+  rag:
+    build: ./rag_server
+    expose:
+      - "8001"
+    depends_on:
+      - db
+
+  db:
+    image: postgres:17.5-alpine3.21
+    container_name: ki-postgres
+    environment:
+      POSTGRES_USER: kilab
+      POSTGRES_PASSWORD: kilab0204
+      POSTGRES_DB: mydb
+    expose:
+      - "5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+volumes:
+  db-data:

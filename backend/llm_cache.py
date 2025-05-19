@@ -43,7 +43,7 @@ class LLMCache:
         try:
             
             response = requests.post(
-                "http://RagServer:8001/rag",
+                "http://rag:8001/rag",
                 json={"query": query},
                 timeout=30
             )

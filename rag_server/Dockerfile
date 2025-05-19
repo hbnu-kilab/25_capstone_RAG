@@ -9,5 +9,5 @@ RUN pip install -r requirements.txt
 
 COPY . .
 RUN find . -name "*.pyc" -delete && find . -name "__pycache__" -type d -exec rm -r {} +
-EXPOSE 8000
+EXPOSE 8001
 CMD ["python", "main.py"]
