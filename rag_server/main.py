@@ -8,6 +8,12 @@ from pydantic import BaseModel
 
 from openai import OpenAI
 from config import load_api_key
+from doc_retrieval.evaluation.evaluate_retrieval import search_documents  # 위에서 만든 함수
+from doc_retrieval.dpr.model import Pooler
+from doc_retrieval.database.vector_database import VectorDatabase
+from transformers import AutoTokenizer, AutoModel
+from utils.bm25 import BM25Reranker
+
 
 app = FastAPI(title="RAG API")
 
@@ -22,16 +28,42 @@ class RAGRequest(BaseModel):
 class RAGResponse(BaseModel):
     answer: str
 
+
+# 전역으로 로드 (한 번만 로딩하면 됨)
+MODEL_PATH = "your_model_path"
+BM25_PATH = "your_bm25.pkl"
+FAISS_PATH = "your_faiss.index"
+
+tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
+q_encoder = AutoModel.from_pretrained(MODEL_PATH)
+pooler = Pooler("cls")  # 또는 mean 등
+faiss_db = VectorDatabase(FAISS_PATH)
+bm25_model = BM25Reranker(bm25_pickle=BM25_PATH)
+faiss_index = faiss_db.faiss_index
+text_index = faiss_db.text_index
+
 @app.post("/rag", response_model=RAGResponse)
 def rag_generate(request: RAGRequest):
     query = request.query
     
     try:
+        # 1. 검색
+        docs = search_documents(query, q_encoder, tokenizer, pooler,
+                                faiss_index, text_index,
+                                bm25_model=bm25_model, device='cuda')
+
+        # 2. 프롬프트 생성
+        context = "\n".join(docs[:5])  # 상위 5개 문서 사용
+        prompt = f"""다음은 사용자의 질문입니다:\n{query}\n\n
+이 질문에 답하기 위해 다음 문서들을 참고하세요:\n{context}\n\n
+문서 기반으로 최대한 정확하게 답변하세요."""
+
+        # 3. LLM 호출
         completion = client.chat.completions.create(
             model="gpt-4o-mini",
             messages=[
-                {"role": "system", "content": "당신은 웹 검색을 할 수 있는 도구를 사용할 수 있습니다."},
-                {"role": "user", "content": query},
+                {"role": "system", "content": "당신은 전문적인 질문 응답 어시스턴트입니다."},
+                {"role": "user", "content": prompt},
             ],
         )
         response = completion.choices[0].message.content
@@ -40,6 +72,8 @@ def rag_generate(request: RAGRequest):
     except Exception as e:
         logger.error(f"RAG 처리 중 오류 발생: {e}")
         raise HTTPException(status_code=500, detail="RAG 처리 오류 발생")
+    
+
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
