@@ -50,9 +50,6 @@ class LLMCache:
             
             return response.json()
         
-            if response.status_code != 200:
-                raise Exception(f"RAG API 요청 실패: {response.status_code} {response.text}")
-        
         except Exception as e:
             logger.error(f"오류 발생: {e}")
             raise HTTPException(status_code=500, detail=str(e), response=None, body=None)
