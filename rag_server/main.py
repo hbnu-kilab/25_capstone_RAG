@@ -7,21 +7,25 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from openai import OpenAI
-from config import load_api_key
-from doc_retrieval.evaluation.evaluate_retrieval import search_documents  # 위에서 만든 함수
-from doc_retrieval.dpr.model import Pooler
-from doc_retrieval.database.vector_database import VectorDatabase
+# from rag_server.config import load_api_key
+from rag_server.doc_retrieval.evaluation.evaluate_retrieval import search_documents  # 위에서 만든 함수
+from rag_server.doc_retrieval.dpr.model import Pooler
+from rag_server.doc_retrieval.database.vector_database import VectorDatabase
 from transformers import AutoTokenizer, AutoModel
-from utils.bm25 import BM25Reranker
-
+from dotenv import load_dotenv
+import os
+import openai
 
 app = FastAPI(title="RAG API")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+load_dotenv(dotenv_path='/Users/lbye/Desktop/Capstone/25_capstone_RAG/rag_server/apikey.env')
+openai.api_key = os.getenv("OPENAI_API_KEY")
+client = OpenAI()
+# client = OpenAI(api_key = load_api_key())
 
-client = OpenAI(api_key = load_api_key())
 class RAGRequest(BaseModel):
     query: str
 
@@ -30,15 +34,15 @@ class RAGResponse(BaseModel):
 
 
 # 전역으로 로드 (한 번만 로딩하면 됨)
-MODEL_PATH = "your_model_path"
-BM25_PATH = "your_bm25.pkl"
-FAISS_PATH = "your_faiss.index"
+MODEL_PATH = "/Users/lbye/Desktop/Capstone/25_capstone_RAG/rag_server/doc_retrieval/model/question_encoder"
+# BM25_PATH = "your_bm25.pkl"
+FAISS_PATH = "/Users/lbye/Desktop/Capstone/25_capstone_RAG/rag_server/doc_retrieval/data/faiss/faiss_pickle.pkl"
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 q_encoder = AutoModel.from_pretrained(MODEL_PATH)
 pooler = Pooler("cls")  # 또는 mean 등
 faiss_db = VectorDatabase(FAISS_PATH)
-bm25_model = BM25Reranker(bm25_pickle=BM25_PATH)
+# bm25_model = BM25Reranker(bm25_pickle=BM25_PATH)
 faiss_index = faiss_db.faiss_index
 text_index = faiss_db.text_index
 
@@ -50,7 +54,7 @@ def rag_generate(request: RAGRequest):
         # 1. 검색
         docs = search_documents(query, q_encoder, tokenizer, pooler,
                                 faiss_index, text_index,
-                                bm25_model=bm25_model, device='cuda')
+                                 device='cuda')
 
         # 2. 프롬프트 생성
         context = "\n".join(docs[:5])  # 상위 5개 문서 사용

@@ -7,8 +7,8 @@ import numpy as np
 from rank_bm25 import BM25Okapi
 
 sys.path.append('../')
-from dpr.data_loader import BiEncoderDataset
-from database.vector_database import VectorDatabase
+from rag_server.doc_retrieval.dpr.data_loader import BiEncoderDataset
+from rag_server.doc_retrieval.database.vector_database import VectorDatabase
 
 LOGGER = logging.getLogger()
 

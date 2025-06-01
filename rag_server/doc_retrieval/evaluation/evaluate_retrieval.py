@@ -9,11 +9,11 @@ from transformers import AutoModel, AutoTokenizer
 import time  # 시간 측정용
 
 sys.path.append('../')
-from dpr.model import Pooler
-from dpr.data_loader import BiEncoderDataset
-from database.vector_database import VectorDatabase
-from utils.bm25 import BM25Reranker
-from utils.utils import get_topk_accuracy
+from rag_server.doc_retrieval.dpr import Pooler
+from rag_server.doc_retrieval.dpr import BiEncoderDataset
+from rag_server.doc_retrieval.database.vector_database import VectorDatabase
+from rag_server.doc_retrieval.utils.bm25 import BM25Reranker
+from rag_server.doc_retrieval.utils.utils import get_topk_accuracy
 
 LOGGER = logging.getLogger()
 
