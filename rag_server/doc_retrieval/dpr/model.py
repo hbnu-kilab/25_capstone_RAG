@@ -28,8 +28,8 @@ import torch
 import torch.nn as nn
 # from torch.cuda.amp import autocast
 from transformers import AutoModel, AutoTokenizer, AutoConfig
-from torch.amp import autocast, GradScaler
-
+from torch.amp import autocast
+# from torch.amp import GradScaler
 
 class MLPLayer(nn.Module):
 

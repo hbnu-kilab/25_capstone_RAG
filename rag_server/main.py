@@ -7,10 +7,10 @@ from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 from openai import OpenAI
-# from rag_server.config import load_api_key
-from rag_server.doc_retrieval.evaluation.evaluate_retrieval import search_documents  # 위에서 만든 함수
-from rag_server.doc_retrieval.dpr.model import Pooler
-from rag_server.doc_retrieval.database.vector_database import VectorDatabase
+from config import load_api_key
+from doc_retrieval.evaluation.evaluate_retrieval import search_documents  # 위에서 만든 함수
+from doc_retrieval.dpr.model import Pooler
+from doc_retrieval.database.vector_database import VectorDatabase
 from transformers import AutoTokenizer, AutoModel
 from dotenv import load_dotenv
 import os
@@ -21,10 +21,10 @@ app = FastAPI(title="RAG API")
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-load_dotenv(dotenv_path='/Users/lbye/Desktop/Capstone/25_capstone_RAG/rag_server/apikey.env')
-openai.api_key = os.getenv("OPENAI_API_KEY")
-client = OpenAI()
-# client = OpenAI(api_key = load_api_key())
+# load_dotenv(dotenv_path='/home/25_Capstone/rag_server/apikey.env')
+# openai.api_key = os.getenv("OPENAI_API_KEY")
+# client = OpenAI()
+client = OpenAI(api_key = load_api_key())
 
 class RAGRequest(BaseModel):
     query: str
@@ -34,9 +34,9 @@ class RAGResponse(BaseModel):
 
 
 # 전역으로 로드 (한 번만 로딩하면 됨)
-MODEL_PATH = "/Users/lbye/Desktop/Capstone/25_capstone_RAG/rag_server/doc_retrieval/model/question_encoder"
+MODEL_PATH = "/app/doc_retrieval/model/question_encoder"
 # BM25_PATH = "your_bm25.pkl"
-FAISS_PATH = "/Users/lbye/Desktop/Capstone/25_capstone_RAG/rag_server/doc_retrieval/data/faiss/faiss_pickle.pkl"
+FAISS_PATH = "/app/doc_retrieval/data/faiss/faiss_pickle.pkl"
 
 tokenizer = AutoTokenizer.from_pretrained(MODEL_PATH)
 q_encoder = AutoModel.from_pretrained(MODEL_PATH)
@@ -54,13 +54,15 @@ def rag_generate(request: RAGRequest):
         # 1. 검색
         docs = search_documents(query, q_encoder, tokenizer, pooler,
                                 faiss_index, text_index,
-                                 device='cuda')
+                                 device='cpu')
 
         # 2. 프롬프트 생성
         context = "\n".join(docs[:5])  # 상위 5개 문서 사용
+        logger.info(f"이것이 검색된 문서임 ~~: {context}")
         prompt = f"""다음은 사용자의 질문입니다:\n{query}\n\n
 이 질문에 답하기 위해 다음 문서들을 참고하세요:\n{context}\n\n
-문서 기반으로 최대한 정확하게 답변하세요."""
+문서 기반으로 최대한 정확하게 답변하세요.
+만약에 문서와 질문이 연관성이 없다고 판단이 되면 모른다고 답변하세요"""
 
         # 3. LLM 호출
         completion = client.chat.completions.create(
@@ -77,7 +79,6 @@ def rag_generate(request: RAGRequest):
         logger.error(f"RAG 처리 중 오류 발생: {e}")
         raise HTTPException(status_code=500, detail="RAG 처리 오류 발생")
     
-
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
