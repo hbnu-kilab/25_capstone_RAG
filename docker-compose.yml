@@ -1,4 +1,4 @@
-
+version: '3.8'
 services:
   ki-chat:
     build: ./frontend
@@ -22,6 +22,17 @@ services:
       - "8001"
     depends_on:
       - db
+    volumes:
+      - ./rag_server:/app
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+    # environment:
+    #   - NVIDIA_VISIBLE_DEVICES=all
 
   db:
     image: postgres:17.5-alpine3.21

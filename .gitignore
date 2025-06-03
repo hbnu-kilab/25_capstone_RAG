@@ -74,3 +74,10 @@ Thumbs.db
 /data/
 /datasets/
 /models/
+
+*.jsonl
+*.json
+*.txt
+*.env
+*.safetensors
+*.pkl
