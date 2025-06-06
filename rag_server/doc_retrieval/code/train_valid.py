@@ -3,7 +3,7 @@ import random
 from collections import defaultdict
 
 # 하나의 파일 경로
-file_path = '../data/qa.json'
+file_path = '../data/qa_data.json'
 
 # 데이터 로드
 with open(file_path, 'r', encoding='utf-8') as f:
