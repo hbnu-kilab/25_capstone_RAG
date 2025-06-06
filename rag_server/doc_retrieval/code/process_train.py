@@ -1,7 +1,7 @@
 import json
  
 # 입력 파일 경로
-query_path = "../data/quereis.jsonl"
+query_path = "../data/queries.jsonl"
 corpus_path = "../data/corpus.jsonl"
 output_path = "../data/qa_data.json"
 
