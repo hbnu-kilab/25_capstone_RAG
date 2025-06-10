@@ -8,22 +8,16 @@ from pydantic import BaseModel
 
 from openai import OpenAI
 from config import load_api_key
-from doc_retrieval.evaluation.evaluate_retrieval import search_documents  # 위에서 만든 함수
+from doc_retrieval.evaluation.evaluate_retrieval import search_documents
 from doc_retrieval.dpr.model import Pooler
 from doc_retrieval.database.vector_database import VectorDatabase
 from transformers import AutoTokenizer, AutoModel
-from dotenv import load_dotenv
-import os
-import openai
 
 app = FastAPI(title="RAG API")
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# load_dotenv(dotenv_path='/home/25_Capstone/rag_server/apikey.env')
-# openai.api_key = os.getenv("OPENAI_API_KEY")
-# client = OpenAI()
 client = OpenAI(api_key = load_api_key())
 
 class RAGRequest(BaseModel):
@@ -32,10 +26,7 @@ class RAGRequest(BaseModel):
 class RAGResponse(BaseModel):
     answer: str
 
-
-# 전역으로 로드 (한 번만 로딩하면 됨)
 MODEL_PATH = "/app/doc_retrieval/model/question_encoder"
-# BM25_PATH = "your_bm25.pkl"
 FAISS_PATH = "/app/doc_retrieval/data/faiss/faiss_pickle.pkl"
 CONTEXT_PATH = "/app/doc_retrieval/data/faiss/context_pickle.pkl"
 
@@ -63,7 +54,7 @@ def rag_generate(request: RAGRequest):
 
         # 2. ID를 실제 텍스트로 올바르게 매칭
         docs = []
-        for doc_id in doc_ids[:5]:  # 상위 5개
+        for doc_id in doc_ids[:5]:
             try:
                 # text_index에서 해당 ID의 위치(인덱스) 찾기
                 idx_position = text_index.index(doc_id)
@@ -79,10 +70,7 @@ def rag_generate(request: RAGRequest):
         context = "\n\n--- 다음 문서 ---\n\n".join(docs)
         logger.info(f"최종 검색된 문서 개수: {len(docs)}")
         
-        prompt = f"""다음은 사용자의 질문입니다:\n{query}\n\n
-이 질문에 답하기 위해 다음 문서들을 참고하세요:\n{context}\n\n
-문서 기반으로 최대한 정확하게 답변하세요.
-만약에 문서와 질문이 연관성이 없다고 판단이 되면 모른다고 답변하세요"""
+        prompt = f"""사용자의 질문에 대해 문서 기반으로 최대한 정확하게 답변하세요. \n\n 다음은 사용자의 질문입니다:\n{query}\n\n 이 질문에 답하기 위해 다음 문서들을 참고하세요:\n{context}\n\n """
 
         # 3. LLM 호출
         completion = client.chat.completions.create(

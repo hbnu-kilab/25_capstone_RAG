@@ -65,7 +65,7 @@ for q in test_questions:
 with open('../data/train.json', 'w', encoding='utf-8') as f:
     json.dump(train_data, f, ensure_ascii=False, indent=2)
 
-with open('/../data/valid.json', 'w', encoding='utf-8') as f:
+with open('../data/valid.json', 'w', encoding='utf-8') as f:
     json.dump(valid_data, f, ensure_ascii=False, indent=2)
 
 with open('../data/test.json', 'w', encoding='utf-8') as f:

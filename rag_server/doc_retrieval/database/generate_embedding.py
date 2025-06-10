@@ -12,7 +12,7 @@ from vector_database import VectorDatabase
 sys.path.append('../')
 from dpr.data_loader import BiEncoderDataset
 from dpr.model import Pooler
-from utils.bm25 import BM25Reranker
+# from utils.bm25 import BM25Reranker
 
 LOGGER = logging.getLogger()
 

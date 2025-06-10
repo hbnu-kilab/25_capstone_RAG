@@ -23,23 +23,24 @@ with open(corpus_path, "r", encoding="utf-8") as f:
 
 # queries 읽고 DPR 형식으로 변환
 dpr_data = []
-
+ 
 with open(query_path, "r", encoding="utf-8") as f:
     for line in f:
         query = json.loads(line)
         source_id = query["metadata"]["source"]
-        trainee_id = query["metadata"]["trainee"]
+        query_id = query["_id"]
         positives = original_id_to_chunks.get(source_id, [])
-
+ 
         if not positives:
             continue  # 매칭되는 청크 없으면 건너뛰기
-
+ 
         entry = {
             "question": query["text"],
-            "answers": trainee_id,
+            "answers": source_id,
             "positive": positives,
             "answer_idx": [p["idx"] for p in positives]
         }
+ 
 
         dpr_data.append(entry)
 
