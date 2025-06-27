@@ -15,7 +15,6 @@ class ImageProcessor:
         self.logger = setup_logger(self.__class__.__name__)
     
     def process_images(self, page: fitz.Page, doc: fitz.Document, pdf_name: str, output_dir: str, page_num: int) -> tuple:
-        """페이지에서 이미지를 추출하고 처리합니다."""
         content_list = []
         elements = []
         
@@ -27,7 +26,6 @@ class ImageProcessor:
                 image_bytes = base_image["image"]
                 image_ext = base_image["ext"]
                 
-                # 이미지 파일명을 custom_id 형식으로 변경
                 image_filename = f"{pdf_name}_{self.counter:04d}_image.{image_ext}"
                 image_path = os.path.join(output_dir, image_filename)
                 
@@ -38,7 +36,6 @@ class ImageProcessor:
                 img_rect = img_info[1] if img_info and isinstance(img_info, tuple) and len(img_info) > 1 else None
 
                 if isinstance(img_rect, fitz.Rect):
-                    # 이미지 영역 파일명도 custom_id 형식으로 변경
                     img_area_filename = f"{pdf_name}_{self.counter:04d}_image_area.png"
                     img_area_path = os.path.join(output_dir, img_area_filename)
                     
