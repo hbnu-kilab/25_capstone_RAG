@@ -14,12 +14,11 @@ class TextProcessor:
         self.logger = setup_logger(self.__class__.__name__)
     
     def process_text_blocks(self, page: fitz.Page, table_rects: List) -> List[Dict[str, Any]]:
-        """테이블과 겹치지 않는 텍스트 블록을 처리합니다."""
         elements = []
         
         blocks = page.get_text("dict")["blocks"]
         for block in blocks:
-            if block["type"] == 0:  # 텍스트 블록
+            if block["type"] == 0:  # text block
                 block_bbox = fitz.Rect(block["bbox"])
                 overlaps_with_table = False
                 
