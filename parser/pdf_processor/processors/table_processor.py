@@ -17,7 +17,6 @@ class TableProcessor:
         self.logger = setup_logger(self.__class__.__name__)
     
     def process_tables(self, page: fitz.Page, pdf_name: str, output_dir: str, page_num: int) -> tuple:
-        """페이지에서 테이블을 추출하고 처리합니다."""
         from core.validator import is_valid_table
 
         content_list = []
@@ -36,7 +35,6 @@ class TableProcessor:
 
                 table_rects.append(table_rect)
                 
-                # 테이블 이미지 파일명을 custom_id 형식으로 변경
                 table_img_filename = f"{pdf_name}_{self.counter:04d}_table.png"
                 table_img_path = os.path.join(output_dir, table_img_filename)
                 
