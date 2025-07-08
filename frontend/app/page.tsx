@@ -6,13 +6,14 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card } from "@/components/ui/card"
 import { Avatar } from "@/components/ui/avatar"
-import { Loader2 } from "lucide-react"
+import { Loader2, Hash } from "lucide-react"
 
 // 메시지 타입 정의
 export type Message = {
   id: string;
   role: "user" | "assistant";
-  content?: string; 
+  content?: string;
+  consultantMode?: boolean; // 입시컨설턴트 모드 여부
 }
 
 export default function ChatbotInterface() {
@@ -20,6 +21,7 @@ export default function ChatbotInterface() {
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
+  const [isConsultantMode, setIsConsultantMode] = useState(false) // 입시컨설턴트 모드 상태
 
   console.log({ messages });
 
@@ -30,6 +32,11 @@ export default function ChatbotInterface() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }, [messages])
+
+  // 입시컨설턴트 버튼 클릭 처리
+  const handleConsultantClick = () => {
+    setIsConsultantMode(!isConsultantMode)
+  }
 
   // 메시지 전송 처리
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,6 +49,7 @@ export default function ChatbotInterface() {
       id: Date.now().toString(),
       role: "user",
       content: input,
+      consultantMode: isConsultantMode, // 입시컨설턴트 모드 정보 포함
     }
 
     setMessages((prev) => [...prev, userMessage])
@@ -124,6 +132,12 @@ export default function ChatbotInterface() {
                           message.role === "user" ? "bg-primary text-primary-foreground" : "bg-muted"
                         }`}
                       >
+                        {message.consultantMode && message.role === "user" && (
+                          <div className="flex items-center gap-1 mb-1 text-xs opacity-80">
+                            <Hash className="h-3 w-3" />
+                            <span>입시컨설턴트</span>
+                          </div>
+                        )}
                         {message.content}
                       </div>
                     </div>
@@ -146,6 +160,21 @@ export default function ChatbotInterface() {
             </div>
 
             <div className="border-t p-4">
+              {/* 입시컨설턴트 버튼 추가 */}
+              <div className="mb-3">
+                <Button
+                  type="button"
+                  variant={isConsultantMode ? "default" : "outline"}
+                  size="sm"
+                  onClick={handleConsultantClick}
+                  disabled={isLoading}
+                  className="text-sm"
+                >
+                  <Hash className="h-3 w-3 mr-1" />
+                  입시컨설턴트
+                </Button>
+              </div>
+              
               <form onSubmit={handleSubmit} className="flex gap-2">
                 <Input
                   value={input}

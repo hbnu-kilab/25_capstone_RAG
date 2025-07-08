@@ -12,7 +12,7 @@ class LLMCache:
         self.cache = {}
         self.semantic_cache = semantic_cache
 
-    def generate(self, query):
+    def generate(self, query, is_consultant_mode):
         if query in self.cache:
             return self.cache[query]
         
@@ -26,7 +26,7 @@ class LLMCache:
             similar_docs['distances'][0][0] < 0.05):
             return similar_docs['metadatas'][0][0]['response']
         
-        response = self.response_to_rag(query)
+        response = self.response_to_rag(query, is_consultant_mode)
         response_str = self._format_response(response)
         
         # 캐시에 저장
@@ -39,12 +39,12 @@ class LLMCache:
         
         return response_str
     
-    def response_to_rag(self, query):
+    def response_to_rag(self, query, is_consultant_mode):
         try:
             
             response = requests.post(
                 "http://rag:8001/rag",
-                json={"query": query},
+                json={"query": query, "is_consultant_mode": is_consultant_mode},
                 timeout=30
             )
             

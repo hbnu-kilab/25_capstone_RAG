@@ -5,6 +5,7 @@ export async function POST(req: Request) {
     id: string;
     role: 'user' | 'assistant';
     content?: string; // 일부 메시지는 content가 없으므로 optional
+    consultantMode?: boolean; // 입시컨설턴트 모드 여부
   };
 
   try {
@@ -16,6 +17,7 @@ export async function POST(req: Request) {
       .map((msg: Message) => ({
         role: msg.role,
         content: msg.content as string,
+        consultantMode: msg.consultantMode || false,
       }));
 
     const response = await fetch('http://ki-api:8000/chat', {
@@ -23,9 +25,10 @@ export async function POST(req: Request) {
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ messages: filteredMessages }),
+      body: JSON.stringify({ messages: filteredMessages, 
+        isConsultantMode: filteredMessages.length > 0 ? filteredMessages[filteredMessages.length - 1].consultantMode : false
+      }),
     });
-
 
     const data = await response.json();
     console.log({ data });

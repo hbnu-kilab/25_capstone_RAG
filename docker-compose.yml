@@ -6,6 +6,9 @@ services:
       - "3000:3000"
     depends_on:
       - ki-api
+    environment:
+      - FASTAPI_URL=http://ki-api:8000
+      - NODE_ENV=production
 
   ki-api:
     build: ./backend
